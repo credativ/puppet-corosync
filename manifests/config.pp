@@ -144,4 +144,14 @@ class corosync::config (
     owner   => 'root',
     group   => 'root'
   }
+
+  if $::osfamily == 'Debian' {
+    exec { 'enable corosync':
+      command => 'sed -i -e \'s/^\(START=\).*$/\1yes/g\' /etc/default/corosync',
+      path    => [ '/bin', '/usr/bin' ],
+      unless  => 'grep \'^START=yes$\' /etc/default/corosync',
+      require => Package['corosync'],
+      before  => Service['corosync'],
+    }
+  }
 }
